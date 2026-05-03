@@ -4,6 +4,8 @@
 
 ---
 
+**[▶ View Live Prototype](https://yasir164.github.io/Pocket-ux-case-study/pocket.html)**
+
 ## Overview
 
 Pocket is a mobile app, responsive website, and fully coded interactive prototype designed to solve a universal problem: not knowing where your money goes. It adapts its budgeting model to how users actually earn — salary, allowance, freelance, or pension — making it the first personal finance tool structurally inclusive of students, freelancers, couples, and retirees.
