@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket — Personal Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #E8251A;
+  --red-dark: #B81D13;
+  --red-light: #FF4A3F;
+  --red-bg: #FFF0EF;
+  --red-mid: #FDDCDA;
+  --dark: #0F1117;
+  --dark2: #1A1D27;
+  --dark3: #242836;
+  --surface: #FFFFFF;
+  --surface2: #F7F8FA;
+  --surface3: #EFF0F3;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --text: #0F1117;
+  --text2: #4A5568;
+  --text3: #9AA3B2;
+  --green: #16A34A;
+  --green-bg: #DCFCE7;
+  --yellow: #CA8A04;
+  --yellow-bg: #FEF9C3;
+  --sidebar-w: 230px;
+  --r: 10px;
+  --r-sm: 6px;
+  --r-lg: 16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--surface2);color:var(--text);min-height:100vh}
+h1,h2,h3,h4,h5{font-family:'Bricolage Grotesque',sans-serif}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.screen.with-sidebar{flex-direction:row}
+
+/* TOPNAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;background:var(--surface);border-bottom:1px solid var(--border)}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.3rem;color:var(--red);letter-spacing:-0.5px;cursor:pointer}
+.nav-links{display:flex;gap:2rem}
+.nav-links a{text-decoration:none;color:var(--text2);font-size:0.875rem;font-weight:500;cursor:pointer;transition:color .2s}
+.nav-links a:hover{color:var(--red)}
+.nav-actions{display:flex;gap:0.75rem}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1.25rem;border-radius:var(--r-sm);font-family:'Inter',sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;border:none;transition:all .18s;text-decoration:none}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-dark);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--red);border:1.5px solid var(--red)}
+.btn-outline:hover{background:var(--red-bg)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface3)}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:var(--dark2)}
+.btn-sm{padding:0.35rem 0.85rem;font-size:0.8rem}
+.btn-lg{padding:0.85rem 2rem;font-size:1rem;border-radius:var(--r)}
+.btn-full{width:100%;justify-content:center}
+
+/* FORMS */
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:0.82rem;font-weight:600;color:var(--text2);margin-bottom:0.35rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:0.7rem 1rem;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:'Inter',sans-serif;font-size:0.875rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--red)}
+.form-divider{text-align:center;color:var(--text3);font-size:0.82rem;margin:1rem 0;position:relative}
+.form-divider::before,.form-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.form-divider::before{left:0}.form-divider::after{right:0}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;padding:1.5rem 1rem;flex-shrink:0}
+.sidebar .logo{color:#fff;margin-bottom:2rem;padding:0 0.5rem}
+.sidebar .logo span{color:var(--red)}
+.sidebar-nav{display:flex;flex-direction:column;gap:0.2rem;flex:1}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.75rem;border-radius:var(--r-sm);color:rgba(255,255,255,0.55);font-size:0.875rem;font-weight:500;cursor:pointer;transition:all .18s;text-decoration:none}
+.nav-item:hover,.nav-item.active{background:rgba(232,37,26,0.18);color:#fff}
+.nav-item.active{background:var(--red);color:#fff}
+.nav-item svg{width:17px;height:17px;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.08)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;background:var(--surface2)}
+.page-header{padding:1.75rem 2rem 0;display:flex;align-items:center;justify-content:space-between}
+.page-header h2{font-size:1.4rem;font-weight:700}
+.page-header p{color:var(--text2);font-size:0.875rem;margin-top:0.2rem}
+.page-body{padding:1.5rem 2rem}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.2rem 0.6rem;border-radius:100px;font-size:0.72rem;font-weight:600}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-yellow{background:var(--yellow-bg);color:var(--yellow)}
+.badge-gray{background:var(--surface3);color:var(--text2)}
+.badge-dark{background:var(--dark3);color:#fff}
+
+/* STAT CARDS */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.stat-label{font-size:0.75rem;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.stat-val{font-family:'Bricolage Grotesque',sans-serif;font-size:1.65rem;font-weight:800;margin-top:0.2rem;color:var(--text)}
+.stat-sub{font-size:0.78rem;color:var(--text3);margin-top:0.15rem}
+.stat-up{color:var(--green)} .stat-down{color:var(--red)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.flex{display:flex}.flex-center{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-1{gap:.5rem}.gap-2{gap:1rem}.gap-3{gap:1.5rem}
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mt-3{margin-top:1.5rem}
+.mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:1rem}
+
+/* PROGRESS */
+.progress-bar{height:8px;background:var(--surface3);border-radius:100px;overflow:hidden}
+.progress-fill{height:100%;border-radius:100px;transition:width .4s}
+.progress-red{background:var(--red)}
+.progress-green{background:var(--green)}
+.progress-yellow{background:#EAB308}
+
+/* TRANSACTION ROW */
+.tx-row{display:flex;align-items:center;gap:0.875rem;padding:0.875rem 0;border-bottom:1px solid var(--border)}
+.tx-row:last-child{border-bottom:none}
+.tx-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.tx-info{flex:1}
+.tx-name{font-size:0.875rem;font-weight:600}
+.tx-date{font-size:0.75rem;color:var(--text3);margin-top:0.1rem}
+.tx-amount{font-family:'Bricolage Grotesque',sans-serif;font-size:0.95rem;font-weight:700}
+
+/* AUTH */
+.auth-wrap{flex:1;display:flex;background:var(--surface2)}
+.auth-left{flex:1;background:var(--red);display:flex;flex-direction:column;justify-content:center;padding:4rem;position:relative;overflow:hidden}
+.auth-left::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.06);top:-100px;right:-100px}
+.auth-left::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(0,0,0,0.1);bottom:-50px;left:-50px}
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:2.5rem;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.08)}
+.auth-box h2{font-size:1.5rem;font-weight:800;margin-bottom:0.35rem}
+.auth-sub{color:var(--text2);font-size:0.875rem;margin-bottom:1.75rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--dark);color:#fff;padding:.75rem 1.25rem;border-radius:var(--r-sm);font-size:.875rem;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:320px}
+.toast.show{opacity:1}
+
+/* DONUT */
+.donut-wrap{position:relative;display:inline-block}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+
+/* TOGGLE */
+.toggle{width:42px;height:22px;background:var(--border2);border-radius:100px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--red)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle.on::after{transform:translateX(20px)}
+
+/* CATEGORY CHIP */
+.cat-chip{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer;transition:all .18s;font-size:0.875rem;font-weight:500;background:var(--surface)}
+.cat-chip:hover,.cat-chip.selected{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.cat-chip .chip-icon{font-size:1.2rem}
+
+/* INCOME OPTION */
+.income-option{padding:1.25rem;border:2px solid var(--border2);border-radius:var(--r);cursor:pointer;transition:all .18s;text-align:center}
+.income-option:hover,.income-option.selected{border-color:var(--red);background:var(--red-bg)}
+.income-option h4{font-size:0.95rem;font-weight:700;margin-top:0.5rem}
+.income-option p{font-size:0.78rem;color:var(--text2);margin-top:0.25rem}
+
+/* 404 */
+.err-404{font-family:'Bricolage Grotesque',sans-serif;font-size:7rem;font-weight:800;color:var(--red);line-height:1}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 1 — LANDING PAGE
+═══════════════════════════════════════════ -->
+<div id="landing" class="screen active">
+  <nav class="topnav">
+    <div class="logo">pocket</div>
+    <div class="nav-links">
+      <a onclick="showScreen('income-mode')">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="showScreen('signin')">Sign In</button>
+      <button class="btn btn-red" onclick="showScreen('signup')">Get Started Free</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:5rem 4rem;max-width:1200px;margin:0 auto;gap:4rem">
+    <div style="flex:1">
+      <div class="badge badge-red" style="margin-bottom:1rem">✦ Personal Finance, Simplified</div>
+      <h1 style="font-size:3.5rem;font-weight:800;line-height:1.1;letter-spacing:-2px">Your money, <em style="color:var(--red);font-style:italic">finally</em><br>makes sense.</h1>
+      <p style="color:var(--text2);font-size:1.1rem;margin:1.5rem 0 2rem;line-height:1.7;max-width:480px">Track spending, set budgets, reach savings goals — all in one beautifully simple app. Built for how you earn, not how banks want you to think.</p>
+      <div style="display:flex;gap:1rem">
+        <button class="btn btn-red btn-lg" onclick="showScreen('signup')">Start for free →</button>
+        <button class="btn btn-ghost btn-lg" onclick="showScreen('signin')">Sign In</button>
+      </div>
+      <div style="display:flex;gap:2rem;margin-top:2.5rem">
+        <div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800">50K+</div><div style="font-size:0.8rem;color:var(--text3)">Active users</div></div>
+        <div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800">$2.4B</div><div style="font-size:0.8rem;color:var(--text3)">Tracked monthly</div></div>
+        <div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800">4.9★</div><div style="font-size:0.8rem;color:var(--text3)">App Store rating</div></div>
+      </div>
+    </div>
+    <div style="flex:0 0 360px">
+      <div class="card" style="border-radius:20px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.12)">
+        <div style="background:var(--red);padding:1.5rem;color:#fff">
+          <div style="font-size:0.8rem;opacity:0.8;margin-bottom:0.3rem">Total Balance</div>
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800">$8,420.50</div>
+          <div style="font-size:0.8rem;opacity:0.8;margin-top:0.25rem">↑ +$340 this month</div>
+        </div>
+        <div style="padding:1.25rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1rem">
+            <div><div style="font-size:0.75rem;color:var(--text3)">Income</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--green)">+$4,200</div></div>
+            <div><div style="font-size:0.75rem;color:var(--text3)">Expenses</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--red)">-$3,860</div></div>
+            <div><div style="font-size:0.75rem;color:var(--text3)">Saved</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700">$340</div></div>
+          </div>
+          <div>
+            <div class="tx-row" style="padding:0.6rem 0"><div class="tx-icon" style="background:#FFF0EF">🛒</div><div class="tx-info"><div class="tx-name" style="font-size:0.82rem">Grocery Store</div><div class="tx-date">Today</div></div><div class="tx-amount" style="color:var(--red);font-size:0.85rem">-$67.40</div></div>
+            <div class="tx-row" style="padding:0.6rem 0"><div class="tx-icon" style="background:#DCFCE7">💼</div><div class="tx-info"><div class="tx-name" style="font-size:0.82rem">Salary</div><div class="tx-date">May 1</div></div><div class="tx-amount" style="color:var(--green);font-size:0.85rem">+$4,200</div></div>
+            <div class="tx-row" style="padding:0.6rem 0;border:none"><div class="tx-icon" style="background:#EFF0F3">☕</div><div class="tx-info"><div class="tx-name" style="font-size:0.82rem">Coffee & Cafe</div><div class="tx-date">Apr 30</div></div><div class="tx-amount" style="color:var(--red);font-size:0.85rem">-$12.00</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div id="features" style="background:var(--dark);padding:5rem 4rem;color:#fff">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:3.5rem">
+        <h2 style="font-size:2rem;font-weight:800">Built for how you earn,<br>not how banks do.</h2>
+        <p style="color:rgba(255,255,255,0.55);margin-top:0.75rem">Everything you need to take control of your finances</p>
+      </div>
+      <div class="grid-3" style="gap:2rem">
+        <div style="background:var(--dark2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:0.75rem">📊</div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Smart Budgeting</h3>
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6">Auto-categorize spending and get alerts before you overspend.</p>
+        </div>
+        <div style="background:var(--dark2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:0.75rem">🎯</div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Savings Goals</h3>
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6">Set goals for anything — vacation, emergency fund, new laptop.</p>
+        </div>
+        <div style="background:var(--dark2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:0.75rem">👥</div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Shared Budgets</h3>
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6">Split expenses with roommates, partners, or family members.</p>
+        </div>
+        <div style="background:var(--dark2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:0.75rem">📈</div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Monthly Reports</h3>
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6">Beautiful insights into your spending trends over time.</p>
+        </div>
+        <div style="background:var(--dark2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:0.75rem">🧾</div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Transaction Tracking</h3>
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6">Every purchase categorized and searchable instantly.</p>
+        </div>
+        <div style="background:var(--dark2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:0.75rem">🔒</div>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Bank-Level Security</h3>
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.6">256-bit encryption and read-only access. Your data is yours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="background:var(--red);padding:5rem 4rem;text-align:center;color:#fff">
+    <h2 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">Ready to understand<br>your money for real?</h2>
+    <p style="opacity:0.85;margin-bottom:2rem;font-size:1rem">Join 50,000+ people who got their finances under control.<br>Set up in 3 minutes.</p>
+    <div style="display:flex;gap:1rem;justify-content:center">
+      <button class="btn btn-dark btn-lg" onclick="showScreen('signup')">Start for free →</button>
+      <button class="btn" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.4);font-size:1rem;padding:0.85rem 2rem;border-radius:var(--r)" onclick="showScreen('signin')">Sign in instead</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="background:var(--dark);padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between">
+    <div class="logo" style="color:#fff">pocket<span style="color:var(--red)">.</span></div>
+    <div style="color:rgba(255,255,255,0.4);font-size:0.8rem">© 2024 Pocket Inc. · Privacy · Terms · Contact</div>
+    <div style="display:flex;gap:1.5rem">
+      <a href="#" style="color:rgba(255,255,255,0.4);font-size:0.8rem;text-decoration:none">Twitter</a>
+      <a href="#" style="color:rgba(255,255,255,0.4);font-size:0.8rem;text-decoration:none">Instagram</a>
+      <a href="#" style="color:rgba(255,255,255,0.4);font-size:0.8rem;text-decoration:none">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 2 — INCOME MODE
+═══════════════════════════════════════════ -->
+<div id="income-mode" class="screen">
+  <nav class="topnav"><div class="logo" onclick="showScreen('landing')" style="cursor:pointer">pocket</div><div style="font-size:0.8rem;color:var(--text3)">Step 1 of 3 — Income Mode</div><button class="btn btn-ghost btn-sm" onclick="showScreen('dashboard')">Skip</button></nav>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:3rem">
+    <div style="max-width:580px;width:100%">
+      <h2 style="font-size:1.75rem;font-weight:800;margin-bottom:0.5rem">How do you get paid?</h2>
+      <p style="color:var(--text2);margin-bottom:2rem">This helps us personalize your budget model to fit your life.</p>
+      <div class="grid-2" style="gap:1rem;margin-bottom:2rem">
+        <div class="income-option selected" onclick="selectIncome(this)">
+          <div style="font-size:2.5rem">💼</div>
+          <h4>Fixed Salary</h4>
+          <p>Same amount every month — easy to budget around.</p>
+        </div>
+        <div class="income-option" onclick="selectIncome(this)">
+          <div style="font-size:2.5rem">📈</div>
+          <h4>Variable Income</h4>
+          <p>Freelance, commission, or irregular payments.</p>
+        </div>
+        <div class="income-option" onclick="selectIncome(this)">
+          <div style="font-size:2.5rem">🏪</div>
+          <h4>Business Owner</h4>
+          <p>Mixing personal and business expenses.</p>
+        </div>
+        <div class="income-option" onclick="selectIncome(this)">
+          <div style="font-size:2.5rem">🎓</div>
+          <h4>Student</h4>
+          <p>Grants, loans, part-time work, or family support.</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Estimated monthly income (after tax)</label>
+        <input type="text" placeholder="e.g. $3,500" value="$4,200">
+      </div>
+      <button class="btn btn-red btn-full btn-lg" onclick="showScreen('category-setup')">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 3 — CATEGORY SETUP
+═══════════════════════════════════════════ -->
+<div id="category-setup" class="screen">
+  <nav class="topnav"><div class="logo" onclick="showScreen('landing')" style="cursor:pointer">pocket</div><div style="font-size:0.8rem;color:var(--text3)">Step 2 of 3 — Categories</div><button class="btn btn-ghost btn-sm" onclick="showScreen('dashboard')">Skip</button></nav>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:3rem">
+    <div style="max-width:620px;width:100%">
+      <h2 style="font-size:1.75rem;font-weight:800;margin-bottom:0.5rem">What do you spend money on?</h2>
+      <p style="color:var(--text2);margin-bottom:2rem">Select all categories that apply — we'll set up your budgets automatically.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:2rem" id="cat-grid">
+        <div class="cat-chip selected" onclick="this.classList.toggle('selected')"><span class="chip-icon">🏠</span> Housing</div>
+        <div class="cat-chip selected" onclick="this.classList.toggle('selected')"><span class="chip-icon">🛒</span> Groceries</div>
+        <div class="cat-chip selected" onclick="this.classList.toggle('selected')"><span class="chip-icon">🚗</span> Transport</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">🍽️</span> Dining Out</div>
+        <div class="cat-chip selected" onclick="this.classList.toggle('selected')"><span class="chip-icon">💊</span> Health</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">🎬</span> Entertainment</div>
+        <div class="cat-chip selected" onclick="this.classList.toggle('selected')"><span class="chip-icon">📱</span> Subscriptions</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">👗</span> Clothing</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">✈️</span> Travel</div>
+        <div class="cat-chip selected" onclick="this.classList.toggle('selected')"><span class="chip-icon">📚</span> Education</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">🐾</span> Pets</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">🎁</span> Gifts</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">💄</span> Personal Care</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">🏋️</span> Fitness</div>
+        <div class="cat-chip" onclick="this.classList.toggle('selected')"><span class="chip-icon">⚡</span> Utilities</div>
+      </div>
+      <div style="background:var(--red-bg);border:1px solid var(--red-mid);border-radius:var(--r-sm);padding:0.875rem 1.1rem;margin-bottom:1.5rem;font-size:0.85rem;color:var(--red)">
+        ✦ 6 categories selected — we'll suggest budget amounts based on your income.
+      </div>
+      <button class="btn btn-red btn-full btn-lg" onclick="showScreen('dashboard');showToast('All set! Welcome to Pocket 🎉')">Set Up My Budgets →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 4 — SIGN IN
+═══════════════════════════════════════════ -->
+<div id="signin" class="screen">
+  <nav class="topnav"><div class="logo" onclick="showScreen('landing')" style="cursor:pointer">pocket</div><div></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div style="position:relative;z-index:1">
+        <div class="logo" style="color:#fff;font-size:1.5rem;margin-bottom:2rem">pocket<span style="color:rgba(255,255,255,0.5)">.</span></div>
+        <h2 style="color:#fff;font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:1rem">Welcome<br>back.</h2>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.9rem;line-height:1.7">Pick up right where you left off. Your financial journey continues.</p>
+        <div style="margin-top:2.5rem;display:flex;flex-direction:column;gap:0.75rem">
+          <div style="display:flex;align-items:center;gap:0.75rem;color:rgba(255,255,255,0.85);font-size:0.85rem"><span>✓</span> All your data synced and ready</div>
+          <div style="display:flex;align-items:center;gap:0.75rem;color:rgba(255,255,255,0.85);font-size:0.85rem"><span>✓</span> Budgets updated in real time</div>
+          <div style="display:flex;align-items:center;gap:0.75rem;color:rgba(255,255,255,0.85);font-size:0.85rem"><span>✓</span> Monthly report waiting for you</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-box">
+        <h2>Sign in to Pocket</h2>
+        <p class="auth-sub">Enter your details to continue</p>
+        <div class="form-group"><label>Email</label><input type="email" value="alex@example.com"></div>
+        <div class="form-group"><label>Password</label><input type="password" value="••••••••"></div>
+        <div style="text-align:right;margin-bottom:1.5rem"><a href="#" style="font-size:0.82rem;color:var(--red)">Forgot password?</a></div>
+        <button class="btn btn-red btn-full btn-lg" onclick="doLogin()">Sign In</button>
+        <div class="form-divider">or continue with</div>
+        <div style="display:flex;gap:0.75rem">
+          <button class="btn btn-ghost btn-full" onclick="doLogin()">🔵 Google</button>
+          <button class="btn btn-ghost btn-full" onclick="doLogin()">🍎 Apple</button>
+        </div>
+        <p style="text-align:center;font-size:0.82rem;color:var(--text3);margin-top:1.5rem">Don't have an account? <a onclick="showScreen('signup')" style="color:var(--red);cursor:pointer;font-weight:600">Sign up free</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 5 — SIGN UP
+═══════════════════════════════════════════ -->
+<div id="signup" class="screen">
+  <nav class="topnav"><div class="logo" onclick="showScreen('landing')" style="cursor:pointer">pocket</div><div></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div style="position:relative;z-index:1">
+        <div class="logo" style="color:#fff;font-size:1.5rem;margin-bottom:2rem">pocket<span style="color:rgba(255,255,255,0.5)">.</span></div>
+        <h2 style="color:#fff;font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:1rem">Your money,<br><em style="font-style:italic">finally</em><br>makes sense.</h2>
+        <p style="color:rgba(255,255,255,0.75);font-size:0.9rem;margin-top:0.75rem;line-height:1.7">Join thousands of people who understand their finances for the first time.</p>
+        <div style="margin-top:2rem;background:rgba(255,255,255,0.12);border-radius:var(--r);padding:1.1rem">
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.7);margin-bottom:0.3rem">Up and running<br>in 3 minutes.</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-box">
+        <h2>Create your account</h2>
+        <p class="auth-sub">Free forever. No credit card needed.</p>
+        <div class="grid-2" style="gap:0.75rem">
+          <div class="form-group"><label>First Name</label><input type="text" placeholder="Alex" id="su-first"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" placeholder="Johnson" id="su-last"></div>
+        </div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="alex@example.com" id="su-email"></div>
+        <div class="form-group"><label>Password</label><input type="password" placeholder="Create a password" id="su-pass"></div>
+        <div class="form-group"><label>Monthly income (optional)</label><input type="text" placeholder="$3,500"></div>
+        <div style="display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:1.25rem">
+          <input type="checkbox" id="tos" checked style="margin-top:3px;flex-shrink:0;width:auto">
+          <label for="tos" style="font-size:0.78rem;color:var(--text2)">I agree to the <a href="#" style="color:var(--red)">Terms</a> and <a href="#" style="color:var(--red)">Privacy Policy</a></label>
+        </div>
+        <button class="btn btn-red btn-full btn-lg" onclick="doSignup()">Create Account →</button>
+        <div class="form-divider">or</div>
+        <button class="btn btn-ghost btn-full" onclick="doSignup()">🔵 Continue with Google</button>
+        <p style="text-align:center;font-size:0.82rem;color:var(--text3);margin-top:1.25rem">Already have an account? <a onclick="showScreen('signin')" style="color:var(--red);cursor:pointer;font-weight:600">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 6 — DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="dashboard" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="showScreen('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+      </a>
+      <a class="nav-item" onclick="showScreen('transactions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions
+      </a>
+      <a class="nav-item" onclick="showScreen('budget')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget
+      </a>
+      <a class="nav-item" onclick="showScreen('saving-goals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals
+      </a>
+      <a class="nav-item" onclick="showScreen('shared-budget')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared
+      </a>
+      <a class="nav-item" onclick="showScreen('monthly-report')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="nav-item" onclick="showScreen('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="sidebar-name">Alex</span>
+      </a>
+      <a class="nav-item" onclick="showScreen('landing')" style="color:rgba(255,255,255,0.35)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Log Out
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <div><h2 id="dash-greeting">Good morning, Alex 👋</h2><p>Here's your financial overview for May 2024</p></div>
+      <button class="btn btn-red" onclick="showScreen('add-expense')">+ Add Expense</button>
+    </div>
+    <div class="page-body">
+      <div class="grid-4" style="gap:1rem;margin-bottom:1.5rem">
+        <div class="stat-card"><div class="stat-label">Total Balance</div><div class="stat-val">$8,420</div><div class="stat-sub stat-up">↑ +$340 this month</div></div>
+        <div class="stat-card"><div class="stat-label">Monthly Income</div><div class="stat-val stat-up">$4,200</div><div class="stat-sub">Salary · May 1</div></div>
+        <div class="stat-card"><div class="stat-label">Total Spent</div><div class="stat-val stat-down">$3,860</div><div class="stat-sub">91.9% of budget</div></div>
+        <div class="stat-card"><div class="stat-label">Saved This Month</div><div class="stat-val">$340</div><div class="stat-sub stat-up">↑ 8.1% savings rate</div></div>
+      </div>
+
+      <div class="grid-2" style="gap:1.5rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="flex-between mb-2"><h3 style="font-size:0.95rem;font-weight:700">Spending by Category</h3><span class="badge badge-gray">May 2024</span></div>
+          <div>
+            <div style="margin-bottom:0.875rem"><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.82rem;font-weight:500">🏠 Housing</span><span style="font-size:0.82rem;font-weight:600">$1,200</span></div><div class="progress-bar"><div class="progress-fill progress-red" style="width:72%"></div></div></div>
+            <div style="margin-bottom:0.875rem"><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.82rem;font-weight:500">🛒 Groceries</span><span style="font-size:0.82rem;font-weight:600">$480</span></div><div class="progress-bar"><div class="progress-fill progress-yellow" style="width:53%"></div></div></div>
+            <div style="margin-bottom:0.875rem"><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.82rem;font-weight:500">🚗 Transport</span><span style="font-size:0.82rem;font-weight:600">$310</span></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:39%"></div></div></div>
+            <div style="margin-bottom:0.875rem"><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.82rem;font-weight:500">🍽️ Dining</span><span style="font-size:0.82rem;font-weight:600">$290</span></div><div class="progress-bar"><div class="progress-fill progress-red" style="width:82%"></div></div></div>
+            <div><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.82rem;font-weight:500">📱 Subscriptions</span><span style="font-size:0.82rem;font-weight:600">$89</span></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:28%"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="flex-between mb-2"><h3 style="font-size:0.95rem;font-weight:700">Recent Transactions</h3><button class="btn btn-ghost btn-sm" onclick="showScreen('transactions')">View all →</button></div>
+          <div>
+            <div class="tx-row"><div class="tx-icon" style="background:#FFF0EF">🛒</div><div class="tx-info"><div class="tx-name">Whole Foods Market</div><div class="tx-date">May 2, 2024</div></div><div class="tx-amount stat-down">-$67.40</div></div>
+            <div class="tx-row"><div class="tx-icon" style="background:#DCFCE7">💼</div><div class="tx-info"><div class="tx-name">Salary Deposit</div><div class="tx-date">May 1, 2024</div></div><div class="tx-amount stat-up">+$4,200</div></div>
+            <div class="tx-row"><div class="tx-icon" style="background:#EFF0F3">☕</div><div class="tx-info"><div class="tx-name">Starbucks</div><div class="tx-date">Apr 30, 2024</div></div><div class="tx-amount stat-down">-$6.80</div></div>
+            <div class="tx-row"><div class="tx-icon" style="background:#FFF0EF">🎬</div><div class="tx-info"><div class="tx-name">Netflix</div><div class="tx-date">Apr 30, 2024</div></div><div class="tx-amount stat-down">-$15.99</div></div>
+            <div class="tx-row"><div class="tx-icon" style="background:#EFF0F3">⛽</div><div class="tx-info"><div class="tx-name">Shell Gas Station</div><div class="tx-date">Apr 29, 2024</div></div><div class="tx-amount stat-down">-$52.00</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="flex-between mb-2"><h3 style="font-size:0.95rem;font-weight:700">Savings Goals Progress</h3><button class="btn btn-ghost btn-sm" onclick="showScreen('saving-goals')">View all →</button></div>
+        <div class="grid-3" style="gap:1rem">
+          <div style="background:var(--surface2);border-radius:var(--r-sm);padding:1rem"><div class="flex-between mb-1"><span style="font-size:0.85rem;font-weight:600">✈️ Vacation</span><span class="badge badge-yellow">65%</span></div><div class="progress-bar"><div class="progress-fill progress-yellow" style="width:65%"></div></div><div style="font-size:0.75rem;color:var(--text3);margin-top:0.35rem">$1,300 of $2,000</div></div>
+          <div style="background:var(--surface2);border-radius:var(--r-sm);padding:1rem"><div class="flex-between mb-1"><span style="font-size:0.85rem;font-weight:600">🆘 Emergency</span><span class="badge badge-green">40%</span></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:40%"></div></div><div style="font-size:0.75rem;color:var(--text3);margin-top:0.35rem">$4,000 of $10,000</div></div>
+          <div style="background:var(--surface2);border-radius:var(--r-sm);padding:1rem"><div class="flex-between mb-1"><span style="font-size:0.85rem;font-weight:600">💻 Laptop</span><span class="badge badge-red">88%</span></div><div class="progress-bar"><div class="progress-fill progress-red" style="width:88%"></div></div><div style="font-size:0.75rem;color:var(--text3);margin-top:0.35rem">$1,100 of $1,250</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 7 — BUDGET
+═══════════════════════════════════════════ -->
+<div id="budget" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item active" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><div><h2>Budget</h2><p>Monthly budget overview — May 2024</p></div><button class="btn btn-red" onclick="showToast('Edit budget mode activated')">Edit Budget</button></div>
+    <div class="page-body">
+      <div style="background:var(--yellow-bg);border:1px solid #FDE68A;border-radius:var(--r-sm);padding:0.875rem 1.1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem">
+        <span style="font-size:1.1rem">⚠️</span>
+        <div style="font-size:0.85rem;color:var(--yellow)"><strong>Dining Out</strong> is 82% of your budget with 28 days left this month. Consider cooking at home more.</div>
+      </div>
+      <div class="grid-2" style="gap:1.5rem">
+        <div>
+          <div class="card" style="margin-bottom:1rem">
+            <div class="flex-between mb-2"><h3 style="font-size:0.875rem;font-weight:700">Budget Overview</h3><span class="badge badge-yellow">⚠ Near limit</span></div>
+            <div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:1rem">
+              <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;color:var(--red)">$3,860</span>
+              <span style="color:var(--text3);font-size:0.9rem">of $4,200 spent</span>
+            </div>
+            <div class="progress-bar" style="height:12px;margin-bottom:0.5rem"><div class="progress-fill progress-red" style="width:92%"></div></div>
+            <div style="font-size:0.78rem;color:var(--text3)">$340 remaining · 91.9% used</div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1rem">Category Budgets</h3>
+            <div id="budget-cats">
+              <div style="margin-bottom:1rem"><div class="flex-between" style="margin-bottom:0.4rem"><div style="display:flex;align-items:center;gap:0.5rem"><span>🏠</span><span style="font-size:0.875rem;font-weight:500">Housing</span></div><div style="text-align:right"><span style="font-size:0.85rem;font-weight:700">$1,200</span><span style="font-size:0.75rem;color:var(--text3)"> / $1,400</span></div></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:86%"></div></div></div>
+              <div style="margin-bottom:1rem"><div class="flex-between" style="margin-bottom:0.4rem"><div style="display:flex;align-items:center;gap:0.5rem"><span>🛒</span><span style="font-size:0.875rem;font-weight:500">Groceries</span></div><div style="text-align:right"><span style="font-size:0.85rem;font-weight:700">$480</span><span style="font-size:0.75rem;color:var(--text3)"> / $600</span></div></div><div class="progress-bar"><div class="progress-fill progress-yellow" style="width:80%"></div></div></div>
+              <div style="margin-bottom:1rem"><div class="flex-between" style="margin-bottom:0.4rem"><div style="display:flex;align-items:center;gap:0.5rem"><span>🍽️</span><span style="font-size:0.875rem;font-weight:500">Dining Out</span></div><div style="text-align:right"><span style="font-size:0.85rem;font-weight:700;color:var(--red)">$290</span><span style="font-size:0.75rem;color:var(--text3)"> / $350</span></div></div><div class="progress-bar"><div class="progress-fill progress-red" style="width:83%"></div></div></div>
+              <div style="margin-bottom:1rem"><div class="flex-between" style="margin-bottom:0.4rem"><div style="display:flex;align-items:center;gap:0.5rem"><span>🚗</span><span style="font-size:0.875rem;font-weight:500">Transport</span></div><div style="text-align:right"><span style="font-size:0.85rem;font-weight:700">$310</span><span style="font-size:0.75rem;color:var(--text3)"> / $400</span></div></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:78%"></div></div></div>
+              <div><div class="flex-between" style="margin-bottom:0.4rem"><div style="display:flex;align-items:center;gap:0.5rem"><span>📱</span><span style="font-size:0.875rem;font-weight:500">Subscriptions</span></div><div style="text-align:right"><span style="font-size:0.85rem;font-weight:700">$89</span><span style="font-size:0.75rem;color:var(--text3)"> / $150</span></div></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:59%"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1.25rem">Set New Budget</h3>
+          <div class="form-group"><label>Category</label><select><option>🏠 Housing</option><option>🛒 Groceries</option><option>🍽️ Dining Out</option><option>🚗 Transport</option><option>📱 Subscriptions</option><option>🎬 Entertainment</option></select></div>
+          <div class="form-group"><label>Monthly Limit</label><input type="text" placeholder="$500" value="$350"></div>
+          <div class="form-group"><label>Alert me when</label><select><option>75% used</option><option>90% used</option><option>100% used</option></select></div>
+          <button class="btn btn-red btn-full" style="margin-top:0.5rem" onclick="showToast('Budget updated!')">Update Budget</button>
+          <div style="margin-top:1.5rem;padding:1rem;background:var(--surface2);border-radius:var(--r-sm)">
+            <div style="font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:0.5rem">💡 Pocket Tip</div>
+            <div style="font-size:0.8rem;color:var(--text2);line-height:1.6">Based on your income of $4,200, the 50/30/20 rule suggests: $2,100 needs, $1,260 wants, $840 savings.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 8 — ADD EXPENSE
+═══════════════════════════════════════════ -->
+<div id="add-expense" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><div><h2>Add Expense</h2><p>Log a new transaction</p></div></div>
+    <div class="page-body">
+      <div class="grid-2" style="gap:1.5rem">
+        <div class="card">
+          <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:1.5rem">Transaction Details</h3>
+          <div style="text-align:center;margin-bottom:1.5rem">
+            <div style="display:inline-flex;background:var(--surface3);border-radius:var(--r-sm);padding:0.25rem">
+              <button class="btn btn-red btn-sm" style="border-radius:var(--r-sm)">Expense</button>
+              <button class="btn btn-ghost btn-sm" style="border:none">Income</button>
+            </div>
+          </div>
+          <div style="text-align:center;margin-bottom:1.75rem">
+            <div style="font-size:0.8rem;color:var(--text3);margin-bottom:0.4rem">Amount</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:3.5rem;font-weight:800;color:var(--text)" id="exp-amount">$12.50</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1.5rem">
+            <button class="btn btn-ghost btn-sm" onclick="addDigit('1')">1</button><button class="btn btn-ghost btn-sm" onclick="addDigit('2')">2</button><button class="btn btn-ghost btn-sm" onclick="addDigit('3')">3</button>
+            <button class="btn btn-ghost btn-sm" onclick="addDigit('4')">4</button><button class="btn btn-ghost btn-sm" onclick="addDigit('5')">5</button><button class="btn btn-ghost btn-sm" onclick="addDigit('6')">6</button>
+            <button class="btn btn-ghost btn-sm" onclick="addDigit('7')">7</button><button class="btn btn-ghost btn-sm" onclick="addDigit('8')">8</button><button class="btn btn-ghost btn-sm" onclick="addDigit('9')">9</button>
+            <button class="btn btn-ghost btn-sm" onclick="addDigit('.')">.</button><button class="btn btn-ghost btn-sm" onclick="addDigit('0')">0</button><button class="btn btn-red btn-sm" onclick="clearAmount()">⌫</button>
+          </div>
+          <div class="form-group"><label>Description</label><input type="text" placeholder="e.g. Coffee at Starbucks" id="exp-desc"></div>
+          <div class="form-group"><label>Date</label><input type="date" value="2024-05-02"></div>
+          <button class="btn btn-red btn-full btn-lg" onclick="saveExpense()">Save Expense →</button>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:1rem">
+            <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1rem">Category</h3>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem">
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--red);border-radius:var(--r-sm);background:var(--red-bg);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">☕</div><div style="font-size:0.7rem;color:var(--red);margin-top:0.2rem;font-weight:600">Dining</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">🛒</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Groceries</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">🚗</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Transport</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">🎬</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Fun</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">💊</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Health</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">📱</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Subs</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">🏠</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Housing</div></div>
+              <div style="text-align:center;padding:0.65rem 0.4rem;border:2px solid var(--border2);border-radius:var(--r-sm);cursor:pointer" onclick="selectExpCat(this)"><div style="font-size:1.2rem">➕</div><div style="font-size:0.7rem;color:var(--text3);margin-top:0.2rem">Other</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1rem">Budget Impact</h3>
+            <div style="background:var(--red-bg);border-radius:var(--r-sm);padding:0.875rem">
+              <div style="font-size:0.78rem;color:var(--red);font-weight:600;margin-bottom:0.3rem">Dining Out Budget</div>
+              <div class="progress-bar" style="margin-bottom:0.3rem"><div class="progress-fill progress-red" style="width:83%"></div></div>
+              <div style="font-size:0.75rem;color:var(--red)">$290 used of $350 · Adding $12.50 = $302.50 (86%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 9 — TRANSACTIONS
+═══════════════════════════════════════════ -->
+<div id="transactions" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item active" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><div><h2>Transactions</h2><p>All your transactions in one place</p></div><button class="btn btn-red" onclick="showScreen('add-expense')">+ Add</button></div>
+    <div class="page-body">
+      <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem">
+        <input type="text" placeholder="🔍 Search transactions..." style="flex:1;padding:0.65rem 1rem;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:'Inter',sans-serif;font-size:0.875rem;outline:none;background:var(--surface)" oninput="filterTx(this.value)">
+        <select style="padding:0.65rem 1rem;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:'Inter',sans-serif;font-size:0.875rem;background:var(--surface)"><option>All Categories</option><option>Groceries</option><option>Dining</option><option>Transport</option><option>Income</option></select>
+        <select style="padding:0.65rem 1rem;border:1.5px solid var(--border2);border-radius:var(--r-sm);font-family:'Inter',sans-serif;font-size:0.875rem;background:var(--surface)"><option>May 2024</option><option>Apr 2024</option><option>Mar 2024</option></select>
+      </div>
+      <div class="card" id="tx-list">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">May 2, 2024</div>
+        <div class="tx-row" data-name="Whole Foods"><div class="tx-icon" style="background:#FFF0EF">🛒</div><div class="tx-info"><div class="tx-name">Whole Foods Market</div><div class="tx-date">Groceries</div></div><span class="badge badge-red" style="margin-right:0.5rem">Groceries</span><div class="tx-amount stat-down">-$67.40</div></div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:0.75rem 0;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">May 1, 2024</div>
+        <div class="tx-row" data-name="Salary"><div class="tx-icon" style="background:#DCFCE7">💼</div><div class="tx-info"><div class="tx-name">Salary Deposit</div><div class="tx-date">Income</div></div><span class="badge badge-green" style="margin-right:0.5rem">Income</span><div class="tx-amount stat-up">+$4,200.00</div></div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:0.75rem 0;padding-bottom:0.5rem;border-bottom:1px solid var(--border)">April 30, 2024</div>
+        <div class="tx-row" data-name="Starbucks"><div class="tx-icon" style="background:#EFF0F3">☕</div><div class="tx-info"><div class="tx-name">Starbucks</div><div class="tx-date">Dining Out</div></div><span class="badge badge-gray" style="margin-right:0.5rem">Dining</span><div class="tx-amount stat-down">-$6.80</div></div>
+        <div class="tx-row" data-name="Netflix"><div class="tx-icon" style="background:#FFF0EF">🎬</div><div class="tx-info"><div class="tx-name">Netflix</div><div class="tx-date">Subscriptions</div></div><span class="badge badge-red" style="margin-right:0.5rem">Subs</span><div class="tx-amount stat-down">-$15.99</div></div>
+        <div class="tx-row" data-name="Shell Gas"><div class="tx-icon" style="background:#EFF0F3">⛽</div><div class="tx-info"><div class="tx-name">Shell Gas Station</div><div class="tx-date">Transport</div></div><span class="badge badge-gray" style="margin-right:0.5rem">Transport</span><div class="tx-amount stat-down">-$52.00</div></div>
+        <div class="tx-row" data-name="Amazon"><div class="tx-icon" style="background:#EFF0F3">📦</div><div class="tx-info"><div class="tx-name">Amazon</div><div class="tx-date">Shopping</div></div><span class="badge badge-gray" style="margin-right:0.5rem">Shopping</span><div class="tx-amount stat-down">-$34.99</div></div>
+        <div class="tx-row" data-name="Gym"><div class="tx-icon" style="background:#DCFCE7">🏋️</div><div class="tx-info"><div class="tx-name">Planet Fitness</div><div class="tx-date">Health</div></div><span class="badge badge-green" style="margin-right:0.5rem">Health</span><div class="tx-amount stat-down">-$24.99</div></div>
+        <div class="tx-row" data-name="Spotify"><div class="tx-icon" style="background:#FFF0EF">🎵</div><div class="tx-info"><div class="tx-name">Spotify</div><div class="tx-date">Subscriptions</div></div><span class="badge badge-red" style="margin-right:0.5rem">Subs</span><div class="tx-amount stat-down">-$9.99</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 10 — SAVING GOALS
+═══════════════════════════════════════════ -->
+<div id="saving-goals" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item active" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><div><h2>Saving Goals</h2><p>Track progress towards what matters</p></div><button class="btn btn-red" onclick="showToast('New goal created!')">+ New Goal</button></div>
+    <div class="page-body">
+      <div style="font-size:0.78rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem">Total saved across goals</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:2.5rem;font-weight:800;margin-bottom:1.5rem">$6,400 <span style="font-size:1rem;color:var(--text3);font-family:'Inter',sans-serif">/ $13,250 total target</span></div>
+      <div class="grid-2" style="gap:1.25rem">
+        <div class="card" style="border-top:4px solid #EAB308">
+          <div class="flex-between mb-2"><div style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.5rem">✈️</span><div><div style="font-weight:700">Vacation Fund</div><div style="font-size:0.75rem;color:var(--text3)">Japan Trip 2024</div></div></div><span class="badge badge-yellow">65%</span></div>
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.4rem">$1,300 <span style="font-size:0.85rem;color:var(--text3);font-family:'Inter',sans-serif">/ $2,000</span></div>
+          <div class="progress-bar" style="height:10px;margin-bottom:0.6rem"><div class="progress-fill progress-yellow" style="width:65%"></div></div>
+          <div style="font-size:0.78rem;color:var(--text3)">$700 remaining · Auto-saving $200/mo · ~4 months left</div>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem"><button class="btn btn-ghost btn-sm" onclick="showToast('Added $100 to Vacation Fund!')">+ Add Funds</button><button class="btn btn-ghost btn-sm">Edit Goal</button></div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--green)">
+          <div class="flex-between mb-2"><div style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.5rem">🆘</span><div><div style="font-weight:700">Emergency Fund</div><div style="font-size:0.75rem;color:var(--text3)">6 months expenses</div></div></div><span class="badge badge-green">40%</span></div>
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.4rem">$4,000 <span style="font-size:0.85rem;color:var(--text3);font-family:'Inter',sans-serif">/ $10,000</span></div>
+          <div class="progress-bar" style="height:10px;margin-bottom:0.6rem"><div class="progress-fill progress-green" style="width:40%"></div></div>
+          <div style="font-size:0.78rem;color:var(--text3)">$6,000 remaining · Auto-saving $500/mo · ~12 months left</div>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem"><button class="btn btn-ghost btn-sm" onclick="showToast('Added $100 to Emergency Fund!')">+ Add Funds</button><button class="btn btn-ghost btn-sm">Edit Goal</button></div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--red)">
+          <div class="flex-between mb-2"><div style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.5rem">💻</span><div><div style="font-weight:700">New Laptop</div><div style="font-size:0.75rem;color:var(--text3)">MacBook Pro M3</div></div></div><span class="badge badge-red">88%</span></div>
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.4rem">$1,100 <span style="font-size:0.85rem;color:var(--text3);font-family:'Inter',sans-serif">/ $1,250</span></div>
+          <div class="progress-bar" style="height:10px;margin-bottom:0.6rem"><div class="progress-fill progress-red" style="width:88%"></div></div>
+          <div style="font-size:0.78rem;color:var(--text3)">Only $150 more to go! 🎉 Almost there.</div>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem"><button class="btn btn-red btn-sm" onclick="showToast('Goal completed! 🎉')">Complete Goal</button><button class="btn btn-ghost btn-sm">Edit</button></div>
+        </div>
+        <div class="card" style="border:2px dashed var(--border2);background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;cursor:pointer" onclick="showToast('New goal dialog opened')">
+          <div style="font-size:2rem;margin-bottom:0.5rem">＋</div>
+          <div style="font-weight:600;color:var(--text2)">Create New Goal</div>
+          <div style="font-size:0.8rem;color:var(--text3);margin-top:0.25rem">Set a target and start saving</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 11 — SHARED BUDGET
+═══════════════════════════════════════════ -->
+<div id="shared-budget" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item active" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><div><h2>Shared Budget</h2><p>Split expenses with others</p></div><button class="btn btn-red" onclick="showToast('Invite sent!')">+ Invite Member</button></div>
+    <div class="page-body">
+      <div class="grid-2" style="gap:1.5rem">
+        <div>
+          <div class="card" style="margin-bottom:1.25rem">
+            <div class="flex-between mb-2"><h3 style="font-size:0.95rem;font-weight:700">Household Budget</h3><span class="badge badge-green">Active</span></div>
+            <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem">
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700">AJ</div>
+              <div style="width:34px;height:34px;border-radius:50%;background:#7C3AED;color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700">SM</div>
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700">JK</div>
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--surface3);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer" onclick="showToast('Invite link copied!')">+</div>
+            </div>
+            <div style="margin-bottom:0.875rem"><div class="flex-between" style="margin-bottom:0.4rem"><span style="font-size:0.875rem;font-weight:500">Alex (you)</span><span style="font-size:0.875rem;font-weight:700 ">$620</span></div><div class="progress-bar"><div class="progress-fill progress-red" style="width:51%"></div></div></div>
+            <div style="margin-bottom:0.875rem"><div class="flex-between" style="margin-bottom:0.4rem"><span style="font-size:0.875rem;font-weight:500">Sam M.</span><span style="font-size:0.875rem;font-weight:700">$580</span></div><div class="progress-bar"><div class="progress-fill" style="width:48%;background:#7C3AED"></div></div></div>
+            <div><div class="flex-between" style="margin-bottom:0.4rem"><span style="font-size:0.875rem;font-weight:500">Jordan K.</span><span style="font-size:0.875rem;font-weight:700">$410</span></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:34%"></div></div></div>
+            <div style="background:var(--surface2);border-radius:var(--r-sm);padding:0.875rem;margin-top:1rem">
+              <div style="font-size:0.78rem;color:var(--text2)">Total shared expenses this month: <strong>$1,610</strong></div>
+              <div style="font-size:0.78rem;color:var(--green);margin-top:0.2rem">Sam owes you $40 · You owe Jordan $30</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1rem">Settle Up</h3>
+            <div style="display:flex;flex-direction:column;gap:0.75rem">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem;background:var(--green-bg);border-radius:var(--r-sm)"><div style="font-size:0.85rem"><strong>Sam</strong> owes you <strong style="color:var(--green)">$40.00</strong></div><button class="btn btn-ghost btn-sm" onclick="showToast('Reminder sent to Sam!')">Remind</button></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem;background:var(--red-bg);border-radius:var(--r-sm)"><div style="font-size:0.85rem">You owe <strong>Jordan</strong> <strong style="color:var(--red)">$30.00</strong></div><button class="btn btn-red btn-sm" onclick="showToast('Payment sent to Jordan!')">Pay Now</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1rem">Shared Transactions</h3>
+          <div class="tx-row"><div class="tx-icon" style="background:#EFF0F3">🏠</div><div class="tx-info"><div class="tx-name">Rent</div><div class="tx-date" style="color:var(--text3)">Split 3 ways · Apr 1</div></div><div style="text-align:right"><div class="tx-amount stat-down">-$600</div><div style="font-size:0.72rem;color:var(--text3)">Your share: $200</div></div></div>
+          <div class="tx-row"><div class="tx-icon" style="background:#FFF0EF">🛒</div><div class="tx-info"><div class="tx-name">Grocery Run</div><div class="tx-date" style="color:var(--text3)">Split 3 ways · Apr 28</div></div><div style="text-align:right"><div class="tx-amount stat-down">-$180</div><div style="font-size:0.72rem;color:var(--text3)">Your share: $60</div></div></div>
+          <div class="tx-row"><div class="tx-icon" style="background:#EFF0F3">💡</div><div class="tx-info"><div class="tx-name">Electricity Bill</div><div class="tx-date" style="color:var(--text3)">Split 3 ways · Apr 25</div></div><div style="text-align:right"><div class="tx-amount stat-down">-$120</div><div style="font-size:0.72rem;color:var(--text3)">Your share: $40</div></div></div>
+          <div class="tx-row"><div class="tx-icon" style="background:#EFF0F3">📺</div><div class="tx-info"><div class="tx-name">Disney+ Subscription</div><div class="tx-date" style="color:var(--text3)">Split 2 ways · Apr 15</div></div><div style="text-align:right"><div class="tx-amount stat-down">-$27.98</div><div style="font-size:0.72rem;color:var(--text3)">Your share: $13.99</div></div></div>
+          <button class="btn btn-ghost btn-full btn-sm" style="margin-top:1rem" onclick="showToast('Add shared expense')">+ Add Shared Expense</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 12 — MONTHLY REPORT
+═══════════════════════════════════════════ -->
+<div id="monthly-report" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item active" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><div><h2>Monthly Report</h2><p>April 2024 — Financial Summary</p></div><div style="display:flex;gap:0.75rem"><button class="btn btn-ghost btn-sm">← April</button><button class="btn btn-ghost btn-sm">May →</button></div></div>
+    <div class="page-body">
+      <div style="background:var(--green-bg);border:1px solid #86EFAC;border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+        <span style="font-size:2rem">🎉</span>
+        <div><div style="font-weight:700;color:var(--green)">Great month, Alex!</div><div style="font-size:0.85rem;color:var(--green);opacity:0.85">You spent <strong>+18% less</strong> than March. Dining out dropped by $120. Keep it up!</div></div>
+      </div>
+      <div class="grid-4" style="gap:1rem;margin-bottom:1.5rem">
+        <div class="stat-card"><div class="stat-label">Total Income</div><div class="stat-val stat-up">$4,200</div><div class="stat-sub">Same as last month</div></div>
+        <div class="stat-card"><div class="stat-label">Total Expenses</div><div class="stat-val">$3,460</div><div class="stat-sub stat-up">↓ -$400 vs March</div></div>
+        <div class="stat-card"><div class="stat-label">Net Savings</div><div class="stat-val">$740</div><div class="stat-sub stat-up">↑ +17.6% savings rate</div></div>
+        <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-val">47</div><div class="stat-sub">avg $73.6 each</div></div>
+      </div>
+      <div class="grid-2" style="gap:1.5rem">
+        <div class="card">
+          <div class="flex-between mb-2"><h3 style="font-size:0.95rem;font-weight:700">Spending Trend</h3><span class="badge badge-green">↓ -18% vs last month</span></div>
+          <div style="height:160px;background:var(--surface2);border-radius:var(--r-sm);position:relative;overflow:hidden">
+            <svg width="100%" height="100%" viewBox="0 0 500 160" preserveAspectRatio="none">
+              <defs><linearGradient id="redGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#E8251A" stop-opacity="0.25"/><stop offset="100%" stop-color="#E8251A" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,100 C50,90 80,110 120,95 C160,80 190,120 250,85 C300,55 350,70 400,50 C430,38 470,45 500,35 L500,160 L0,160 Z" fill="url(#redGrad)"/>
+              <path d="M0,100 C50,90 80,110 120,95 C160,80 190,120 250,85 C300,55 350,70 400,50 C430,38 470,45 500,35" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+              <circle cx="0" cy="100" r="4" fill="var(--red)"/>
+              <circle cx="120" cy="95" r="4" fill="var(--red)"/>
+              <circle cx="250" cy="85" r="4" fill="var(--red)"/>
+              <circle cx="400" cy="50" r="4" fill="var(--red)"/>
+              <circle cx="500" cy="35" r="5" fill="var(--red)" stroke="#fff" stroke-width="2"/>
+            </svg>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text3);margin-top:0.4rem;padding:0 0.5rem">
+            <span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:1.25rem">Top Spending Categories</h3>
+          <div style="display:flex;flex-direction:column;gap:0.875rem">
+            <div><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.875rem;font-weight:500">🏠 Housing</span><span style="font-size:0.875rem;font-weight:700">$1,200 <span style="color:var(--text3);font-weight:400">(34.7%)</span></span></div><div class="progress-bar"><div class="progress-fill progress-red" style="width:70%"></div></div></div>
+            <div><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.875rem;font-weight:500">🛒 Groceries</span><span style="font-size:0.875rem;font-weight:700">$460 <span style="color:var(--text3);font-weight:400">(13.3%)</span></span></div><div class="progress-bar"><div class="progress-fill progress-yellow" style="width:40%"></div></div></div>
+            <div><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.875rem;font-weight:500">🍽️ Dining Out</span><span style="font-size:0.875rem;font-weight:700">$170 <span style="color:var(--green);font-weight:400">↓ -$120</span></span></div><div class="progress-bar"><div class="progress-fill progress-green" style="width:22%"></div></div></div>
+            <div><div class="flex-between" style="margin-bottom:0.3rem"><span style="font-size:0.875rem;font-weight:500">🚗 Transport</span><span style="font-size:0.875rem;font-weight:700">$280 <span style="color:var(--text3);font-weight:400">(8.1%)</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:28%;background:#7C3AED"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 13 — PROFILE
+═══════════════════════════════════════════ -->
+<div id="profile" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">pocket<span style="color:var(--red)">.</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('transactions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Transactions</a>
+      <a class="nav-item" onclick="showScreen('budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Budget</a>
+      <a class="nav-item" onclick="showScreen('saving-goals')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Goals</a>
+      <a class="nav-item" onclick="showScreen('shared-budget')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Shared</a>
+      <a class="nav-item" onclick="showScreen('monthly-report')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><h2>My Profile</h2></div>
+    <div class="page-body">
+      <div class="grid-2" style="gap:1.5rem">
+        <div>
+          <div class="card" style="margin-bottom:1.25rem">
+            <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem">
+              <div style="width:72px;height:72px;border-radius:50%;background:var(--red);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:1.75rem;font-weight:800;display:flex;align-items:center;justify-content:center" id="profile-av">AJ</div>
+              <div>
+                <h3 style="font-size:1.1rem;font-weight:800" id="profile-name-disp">Alex Johnson</h3>
+                <div style="font-size:0.82rem;color:var(--text3)" id="profile-email-disp">alex@example.com</div>
+                <span class="badge badge-red" style="margin-top:0.3rem">Member since Jan 2024</span>
+              </div>
+            </div>
+            <div class="form-group"><label>Full Name</label><input type="text" value="Alex Johnson" oninput="updateProfileName(this.value)"></div>
+            <div class="form-group"><label>Email</label><input type="email" value="alex@example.com"></div>
+            <div class="form-group"><label>Currency</label><select><option>USD ($)</option><option>EUR (€)</option><option>GBP (£)</option></select></div>
+            <button class="btn btn-red btn-sm" onclick="showToast('Profile saved!')">Save Changes</button>
+          </div>
+          <div class="card">
+            <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1rem">Your Stats</h3>
+            <div class="grid-2" style="gap:0.75rem">
+              <div class="stat-card" style="padding:0.875rem"><div class="stat-label" style="font-size:0.7rem">Total Tracked</div><div class="stat-val" style="font-size:1.3rem">$42,800</div></div>
+              <div class="stat-card" style="padding:0.875rem"><div class="stat-label" style="font-size:0.7rem">Saved to Date</div><div class="stat-val" style="font-size:1.3rem;color:var(--green)">$6,400</div></div>
+              <div class="stat-card" style="padding:0.875rem"><div class="stat-label" style="font-size:0.7rem">Transactions</div><div class="stat-val" style="font-size:1.3rem">312</div></div>
+              <div class="stat-card" style="padding:0.875rem"><div class="stat-label" style="font-size:0.7rem">Goals Completed</div><div class="stat-val" style="font-size:1.3rem">4</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.875rem;font-weight:700;margin-bottom:1.25rem">Preferences</h3>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:500;font-size:0.875rem">Budget Alerts</div><div style="font-size:0.75rem;color:var(--text3)">Notify when 80% spent</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:500;font-size:0.875rem">Weekly Summary</div><div style="font-size:0.75rem;color:var(--text3)">Sunday morning digest</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:500;font-size:0.875rem">Goal Reminders</div><div style="font-size:0.75rem;color:var(--text3)">Monthly contribution prompts</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:500;font-size:0.875rem">Dark Mode</div><div style="font-size:0.75rem;color:var(--text3)">Use system preference</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0"><div><div style="font-weight:500;font-size:0.875rem">Two-Factor Auth</div><div style="font-size:0.75rem;color:var(--text3)">Extra account security</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+          <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:0.5rem">
+            <button class="btn btn-ghost btn-sm btn-full" onclick="showToast('Exported to CSV!')">Export Data (CSV)</button>
+            <button class="btn btn-ghost btn-sm btn-full" style="color:var(--red);border-color:rgba(232,37,26,0.25)" onclick="showScreen('landing')">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  SCREEN 14 — 404 ERROR PAGE
+═══════════════════════════════════════════ -->
+<div id="not-found" class="screen">
+  <nav class="topnav"><div class="logo" onclick="showScreen('landing')" style="cursor:pointer">pocket</div></nav>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem">
+    <div class="err-404">404</div>
+    <h2 style="font-size:1.5rem;font-weight:800;margin-top:1rem;margin-bottom:0.5rem">This page doesn't exist.</h2>
+    <p style="color:var(--text2);max-width:360px;margin-bottom:2rem;line-height:1.6">Looks like this page went on an unplanned spending spree and got lost. Let's get you back on track.</p>
+    <div style="display:flex;gap:1rem">
+      <button class="btn btn-red btn-lg" onclick="showScreen('dashboard')">Go to Dashboard</button>
+      <button class="btn btn-ghost btn-lg" onclick="showScreen('landing')">Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+let currentUser = {name:'Alex', email:'alex@example.com'};
+let expAmount = '12.50';
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(el) { el.classList.add('active'); window.scrollTo(0,0); }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function doLogin() {
+  showScreen('dashboard');
+  showToast('Welcome back, Alex! 👋');
+}
+
+function doSignup() {
+  const fn = document.getElementById('su-first');
+  const ln = document.getElementById('su-last');
+  const em = document.getElementById('su-email');
+  const name = fn && fn.value ? fn.value : 'Alex';
+  const last = ln && ln.value ? ln.value : 'Johnson';
+  const email = em && em.value ? em.value : 'alex@example.com';
+  currentUser = {name, email};
+  const full = name + ' ' + last;
+  document.getElementById('sidebar-name').textContent = name;
+  document.getElementById('dash-greeting').textContent = `Good ${tod()}, ${name} 👋`;
+  document.getElementById('profile-name-disp').textContent = full;
+  document.getElementById('profile-email-disp').textContent = email;
+  document.getElementById('profile-av').textContent = name[0].toUpperCase() + last[0].toUpperCase();
+  showScreen('income-mode');
+  showToast('Account created! Let\'s set you up 🚀');
+}
+
+function tod() {
+  const h = new Date().getHours();
+  return h<12?'morning':h<17?'afternoon':'evening';
+}
+
+function selectIncome(el) {
+  document.querySelectorAll('.income-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function addDigit(d) {
+  if(d==='.' && expAmount.includes('.')) return;
+  if(d!=='.' && expAmount.split('.')[1]?.length >= 2) return;
+  if(expAmount==='0') expAmount = d==='.' ? '0.' : d;
+  else expAmount += d;
+  document.getElementById('exp-amount').textContent = '$' + expAmount;
+}
+
+function clearAmount() {
+  expAmount = expAmount.slice(0,-1) || '0';
+  document.getElementById('exp-amount').textContent = '$' + expAmount;
+}
+
+function saveExpense() {
+  showScreen('transactions');
+  showToast(`$${expAmount} expense saved! ✓`);
+  expAmount = '0';
+  document.getElementById('exp-amount').textContent = '$0';
+}
+
+function selectExpCat(el) {
+  document.querySelectorAll('[onclick="selectExpCat(this)"]').forEach(c=>{
+    c.style.borderColor='var(--border2)'; c.style.background='';
+    c.querySelector('div:last-child').style.color='var(--text3)';
+  });
+  el.style.borderColor='var(--red)'; el.style.background='var(--red-bg)';
+  el.querySelector('div:last-child').style.color='var(--red)';
+}
+
+function filterTx(q) {
+  document.querySelectorAll('#tx-list .tx-row').forEach(r=>{
+    const name = r.dataset.name||'';
+    r.style.display = !q || name.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function updateProfileName(v) {
+  document.getElementById('profile-name-disp').textContent = v||'User';
+}
+
+// Set greeting
+document.getElementById('dash-greeting').textContent = `Good ${tod()}, Alex 👋`;
+</script>
+</body>
+</html>
